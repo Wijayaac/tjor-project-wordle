@@ -9,19 +9,29 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function Game() {
+  const [results, setResults] = useState([]);
+
+  const addResults = (result) => {
+    const nextResults = [...results];
+    nextResults.push(result);
+    setResults(nextResults);
+  };
   return (
     <>
-      <GuessInput />
+      {/* <Guess /> */}
+      <GuessInput addResults={addResults} />
+      <GuessResults results={results} />
     </>
   );
 }
 
-function GuessInput() {
+function GuessInput({ addResults }) {
   const [guess, setGuess] = useState("");
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const newGuess = { guess: guess.toUpperCase() };
-
+    const newGuess = { id: Math.random(), guess: guess.toUpperCase() };
+    addResults(newGuess);
     setGuess("");
   };
   return (
@@ -29,6 +39,18 @@ function GuessInput() {
       <label htmlFor='guess-input'>Enter guess:</label>
       <input id='guess-input' type='text' value={guess} maxLength={5} pattern='[a-Z]{2}' onChange={(event) => setGuess(event.target.value)} />
     </form>
+  );
+}
+
+function GuessResults({ results }) {
+  return (
+    <div className='guess-results'>
+      {results.map((result) => (
+        <p className='guess' key={result.id}>
+          {result.guess}
+        </p>
+      ))}
+    </div>
   );
 }
 
