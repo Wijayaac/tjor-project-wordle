@@ -12,16 +12,25 @@ console.info({ answer });
 
 function Game() {
   const [results, setResults] = useState([]);
+  const [status, setStatus] = useState("");
 
   const addResults = (result) => {
     const nextResults = [...results];
     nextResults.push(result);
     setResults(nextResults);
+
+    const checkedGuess = result.guess === answer;
+    if (checkedGuess) {
+      setStatus("won");
+    } else if (results.length > 4 && !checkedGuess) {
+      setStatus("lost");
+    }
   };
   return (
     <>
       <GuessResults results={results} />
       <GuessInput addResults={addResults} />
+      {status && <Banner status={status} totalGuesses={results.length} />}
     </>
   );
 }
@@ -46,11 +55,6 @@ function GuessInput({ addResults }) {
 function GuessResults({ results }) {
   return (
     <div className='guess-results'>
-      {results.map((result) => (
-        <p className='guess' key={result.id}>
-          {result.guess}
-        </p>
-      ))}
       {range(NUM_OF_GUESSES_ALLOWED).map((num) => (
         <Guess value={results[num]} key={num} />
       ))}
@@ -68,6 +72,32 @@ function Guess({ value }) {
         </span>
       ))}
     </p>
+  );
+}
+
+function Banner({ status, totalGuesses }) {
+  if (status === "lost") {
+    return (
+      <div className='sad banner'>
+        <p>
+          Sorry, the correct answer is <strong>{answer}</strong>.
+        </p>
+      </div>
+    );
+  } else if (status === "won") {
+    return (
+      <div className='happy banner'>
+        <p>
+          <strong>Congratulations!</strong> Got it in
+          <strong> {totalGuesses} guesses</strong>.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className='banner'>
+      <p>Keep Going!</p>
+    </div>
   );
 }
 export default Game;
